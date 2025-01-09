@@ -1,13 +1,12 @@
 #include "raylib-cpp.hpp"
+#include <cstdint>
 #include <print>
+#include <span>
 #include <functional>
-#include <iostream>
 
 #include "Cpu.hpp"
 
 int main() {
-    // Cpu cpu;
-
     constexpr int window_width = 800;
     constexpr int window_height = 400;
 

@@ -30,7 +30,9 @@ class Cpu {
 public:
     explicit Cpu(std::span<uint16_t> opcodes);
 
-    void tick(uint16_t opcode);
+    void tick();
+
+    void tick_timers();
 
 private:
     uint16_t program_counter = START_ADDR;

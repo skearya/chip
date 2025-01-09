@@ -1,12 +1,16 @@
 #include "Cpu.hpp"
 #include <cstdint>
+#include <print>
+#include <ranges>
 
 Cpu::Cpu(std::span<uint16_t> opcodes) {
+    std::ranges::copy(FONT_SET, memory.begin());
+    std::ranges::copy(opcodes, memory.begin() + START_ADDR);
 };
 
-void Cpu::tick(const uint16_t opcode) {
+void Cpu::tick() {
     // ReSharper disable once CppDefaultCaseNotHandledInSwitchStatement (All cases handled)
-    switch (opcode & 0xF000) {
+    switch (const uint16_t opcode = memory[program_counter++]; opcode & 0xF000) {
         case 0x0000: {
             switch (opcode) {
                 case 0x00E0: {
@@ -108,6 +112,19 @@ void Cpu::tick(const uint16_t opcode) {
         case 0xF000: {
             break;
         }
+    }
+}
+
+void Cpu::tick_timers() {
+    if (delay_timer > 0) {
+        delay_timer -= 1;
+    }
+
+    if (sound_timer > 0) {
+        if (stack_pointer == 1) {
+            // Beep?
+        }
+        sound_timer -= 1;
     }
 }
 
