@@ -28,7 +28,10 @@ constexpr std::array<uint8_t, 80> FONT_SET = {
 
 class Cpu {
 public:
-    explicit Cpu(std::span<uint16_t> opcodes);
+    std::array<std::array<bool, 64>, 32> pixels = {};
+    std::array<bool, 16> keys = {};
+
+    explicit Cpu(std::span<uint8_t> opcodes);
 
     void tick();
 
@@ -43,8 +46,8 @@ private:
     uint8_t stack_pointer = 0;
     uint8_t delay_timer = 0;
     uint8_t sound_timer = 0;
-    std::array<std::array<bool, 64>, 32> pixels = {};
-    std::array<bool, 16> keys = {};
+
+    uint16_t fetch_opcode();
 
     void push(uint16_t address);
 
