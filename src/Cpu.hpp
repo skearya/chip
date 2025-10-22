@@ -1,13 +1,13 @@
 #pragma once
 
-#include <cstdint>
 #include <array>
+#include <cstdint>
 #include <span>
 
 constexpr uint16_t START_ADDR = 0x200;
 
 // https://multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/
-constexpr std::array<uint8_t, 80> FONT_SET = {
+constexpr std::array<uint8_t, 80> FONT_SET{
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
     0x20, 0x60, 0x20, 0x20, 0x70, // 1
     0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -23,33 +23,33 @@ constexpr std::array<uint8_t, 80> FONT_SET = {
     0xF0, 0x80, 0x80, 0x80, 0xF0, // C
     0xE0, 0x90, 0x90, 0x90, 0xE0, // D
     0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
-    0xF0, 0x80, 0xF0, 0x80, 0x80 // F
+    0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
 class Cpu {
 public:
-    std::array<std::array<bool, 64>, 32> pixels = {};
-    std::array<bool, 16> keys = {};
+  std::array<std::array<bool, 64>, 32> pixels{};
+  std::array<bool, 16> keys{};
 
-    explicit Cpu(std::span<uint8_t> opcodes);
+  Cpu(std::span<uint8_t> opcodes);
 
-    void tick();
+  void tick();
 
-    void tick_timers();
+  void tick_timers();
 
 private:
-    uint16_t program_counter = START_ADDR;
-    std::array<uint8_t, 16> registers = {};
-    uint16_t i_register = 0;
-    std::array<uint8_t, 4096> memory = {};
-    std::array<uint16_t, 16> stack = {};
-    uint8_t stack_pointer = 0;
-    uint8_t delay_timer = 0;
-    uint8_t sound_timer = 0;
+  uint16_t program_counter = START_ADDR;
+  std::array<uint8_t, 16> registers{};
+  uint16_t i_register = 0;
+  std::array<uint8_t, 4096> memory{};
+  std::array<uint16_t, 16> stack{};
+  uint8_t stack_pointer = 0;
+  uint8_t delay_timer = 0;
+  uint8_t sound_timer = 0;
 
-    uint16_t fetch_opcode();
+  uint16_t fetch_opcode();
 
-    void push(uint16_t address);
+  void push(uint16_t address);
 
-    uint16_t pop();
+  uint16_t pop();
 };

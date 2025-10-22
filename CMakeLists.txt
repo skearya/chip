@@ -26,9 +26,7 @@ endif ()
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(${PROJECT_NAME} src/main.cpp
-        src/cpu.cpp
-        src/cpu.hpp)
+add_executable(${PROJECT_NAME} src/main.cpp src/cpu.cpp src/render.cpp)
 
 target_link_libraries(${PROJECT_NAME} raylib)
 target_link_libraries(${PROJECT_NAME} raylib_cpp)

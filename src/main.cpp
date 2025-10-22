@@ -1,80 +1,31 @@
-#include "raylib-cpp.hpp"
 #include <cstdint>
-#include <print>
 #include <filesystem>
 #include <fstream>
-#include <iterator>
+#include <stdexcept>
 #include <vector>
 
 #include "Cpu.hpp"
+#include "Render.hpp"
 
-int main() {
-    const std::filesystem::path path("/Users/bradley/Downloads/Tetris [Fran Dachille, 1991].ch8");
-    const uintmax_t length = file_size(path);
+int main(int argc, char *argv[]) {
+  if (argc != 2) {
+    throw std::runtime_error{"invalid argument count"};
+  }
 
-    std::vector<uint8_t> buffer(length);
-    std::ifstream file("/Users/bradley/Downloads/Tetris [Fran Dachille, 1991].ch8", std::ios_base::binary);
+  std::filesystem::path name{argv[1]};
 
-    file.read(reinterpret_cast<std::istream::char_type *>(buffer.data()), static_cast<long>(length));
-    file.close();
+  auto length = std::filesystem::file_size(name);
+  if (length == 0) {
+    throw std::runtime_error("error reading file");
+  }
 
-    Cpu cpu(std::span{buffer});
+  std::vector<uint8_t> buffer(length);
+  std::ifstream file{name, std::ios_base::binary};
+  file.read(reinterpret_cast<char *>(buffer.data()), length);
+  file.close();
 
-    constexpr int window_width = 800;
-    constexpr int window_height = 400;
+  Render renderer{Cpu{std::span{buffer}}};
+  renderer.run();
 
-    constexpr int rows = 32;
-    constexpr int cols = 64;
-
-    constexpr float pixel_width = static_cast<float>(window_width) / static_cast<float>(cols);
-    constexpr float pixel_height = static_cast<float>(window_height) / static_cast<float>(rows);
-
-    const raylib::Color bg(0x111216FF);
-    const raylib::Color fg(0xf58ee0FF);
-
-    raylib::Window window(window_width, window_height, "chip");
-
-    window.SetTargetFPS(60);
-
-    while (!window.ShouldClose()) {
-        cpu.keys[0x1] = raylib::Keyboard::IsKeyDown(KEY_ONE);
-        cpu.keys[0x2] = raylib::Keyboard::IsKeyDown(KEY_TWO);
-        cpu.keys[0x3] = raylib::Keyboard::IsKeyDown(KEY_THREE);
-        cpu.keys[0xC] = raylib::Keyboard::IsKeyDown(KEY_FOUR);
-        cpu.keys[0x4] = raylib::Keyboard::IsKeyDown(KEY_Q);
-        cpu.keys[0x5] = raylib::Keyboard::IsKeyDown(KEY_W);
-        cpu.keys[0x6] = raylib::Keyboard::IsKeyDown(KEY_E);
-        cpu.keys[0xD] = raylib::Keyboard::IsKeyDown(KEY_R);
-        cpu.keys[0x7] = raylib::Keyboard::IsKeyDown(KEY_A);
-        cpu.keys[0x8] = raylib::Keyboard::IsKeyDown(KEY_S);
-        cpu.keys[0x9] = raylib::Keyboard::IsKeyDown(KEY_D);
-        cpu.keys[0xE] = raylib::Keyboard::IsKeyDown(KEY_F);
-        cpu.keys[0xA] = raylib::Keyboard::IsKeyDown(KEY_Z);
-        cpu.keys[0x0] = raylib::Keyboard::IsKeyDown(KEY_X);
-        cpu.keys[0xB] = raylib::Keyboard::IsKeyDown(KEY_C);
-        cpu.keys[0xF] = raylib::Keyboard::IsKeyDown(KEY_V);
-
-        for (int i = 0; i < 8; ++i) {
-            cpu.tick();
-            cpu.tick_timers();
-        }
-
-        window.BeginDrawing();
-
-        window.ClearBackground(bg);
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                if (cpu.pixels[i][j]) {
-                    raylib::Rectangle(static_cast<float>(j) * pixel_width,
-                                      static_cast<float>(i) * pixel_height,
-                                      pixel_width, pixel_height).Draw(fg);
-                }
-            }
-        }
-
-        window.EndDrawing();
-    }
-
-    return 0;
+  return 0;
 }
